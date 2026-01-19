@@ -20,7 +20,11 @@ pip install -r requirements.txt
 # 3. Run the application
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
-
+Or you can use sh files to setup and run.
+```bash
+./setup.sh
+./run.sh
+```
 The API will be available at:
 - REST API Docs: http://localhost:8000/docs
 - GraphQL Playground: http://localhost:8000/graphql

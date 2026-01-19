@@ -120,9 +120,45 @@ query {
 ### GraphQL Testing (Command Line)
 
 ```bash
+# Query tenants
 curl -X POST http://localhost:8000/graphql \
   -H "Content-Type: application/json" \
   -d '{"query": "{ tenants { id name } }"}'
+
+# Create tenant
+curl -X POST http://localhost:8000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query": "mutation { createTenant(input: { name: \"Test Company\" }) { id name } }"}'
+
+# Create invoice (replace 1 with tenant_id)
+curl -X POST http://localhost:8000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query": "mutation { createInvoice(tenantId: 1, input: { amount: \"500.00\", invoiceNumber: \"INV-001\" }) { id amount status } }"}'
+
+# Query invoices
+curl -X POST http://localhost:8000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query": "{ invoices(tenantId: 1) { id amount status } }"}'
+
+# Import transactions
+curl -X POST http://localhost:8000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query": "mutation { importBankTransactions(tenantId: 1, input: { transactions: [{ externalId: \"TX-001\", postedAt: \"2024-01-15T10:00:00\", amount: \"500.00\", description: \"Payment\" }] }, idempotencyKey: \"gql-key-1\") { id amount } }"}'
+
+# Run reconciliation
+curl -X POST http://localhost:8000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query": "mutation { reconcile(tenantId: 1) { id score status } }"}'
+
+# Get AI explanation
+curl -X POST http://localhost:8000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query": "{ explainReconciliation(tenantId: 1, invoiceId: 1, transactionId: 1) { explanation } }"}'
+
+# Confirm match
+curl -X POST http://localhost:8000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query": "mutation { confirmMatch(tenantId: 1, matchId: 1) { id status } }"}'
 ```
 
 ### AI Explanation Testing
